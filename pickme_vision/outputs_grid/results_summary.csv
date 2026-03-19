@@ -1,0 +1,12 @@
+dataset,model,attack_mode,seed,candidate_size,attack_size,topk,proxy_epochs,victim_epochs,selection_rate,num_selected_attackers,attacker_entropy_mean,non_attacker_entropy_mean,victim_accuracy,model_params,results_dir
+mnist,simplecnn,random,7,5000,100,500,3,3,0.04,4,1.5565705299377441,1.5697283744812012,0.696,35962,outputs_grid/mnist_simplecnn_random_N5000_M100_K500_seed7
+mnist,simplecnn,pickme,7,5000,100,500,3,3,0.12,12,1.5773659944534302,1.4352493286132812,0.8838,35962,outputs_grid/mnist_simplecnn_pickme_N5000_M100_K500_seed7
+mnist,resnet_gn,random,7,5000,100,500,3,3,0.12,12,0.47279417514801025,0.47838592529296875,0.9612,175258,outputs_grid/mnist_resnet_gn_random_N5000_M100_K500_seed7
+mnist,resnet_gn,pickme,7,5000,100,500,3,3,0.07,7,0.7147562503814697,0.695814311504364,0.909,175258,outputs_grid/mnist_resnet_gn_pickme_N5000_M100_K500_seed7
+mnist,depthwisecnn,random,7,5000,100,500,3,3,0.1,10,1.5410963296890259,1.540769338607788,0.7318,22634,outputs_grid/mnist_depthwisecnn_random_N5000_M100_K500_seed7
+mnist,depthwisecnn,pickme,7,5000,100,500,3,3,0.13,13,1.4475245475769043,1.3002331256866455,0.8232,22634,outputs_grid/mnist_depthwisecnn_pickme_N5000_M100_K500_seed7
+mnist,tinyvit,random,7,5000,100,500,3,3,0.05,5,1.2589914798736572,1.268760323524475,0.5594,347722,outputs_grid/mnist_tinyvit_random_N5000_M100_K500_seed7
+mnist,tinyvit,pickme,7,5000,100,500,3,3,0.13,13,1.1225504875183105,1.0247104167938232,0.6864,347722,outputs_grid/mnist_tinyvit_pickme_N5000_M100_K500_seed7
+mnist,simplecnn,pickme++,7,5000,100,500,3,3,0.11,11,1.4512238502502441,1.4132747650146484,0.8148,35962,outputs_grid/mnist_simplecnn_pickme++_N5000_M100_K500_seed7
+mnist,resnet_gn,pickme++,7,5000,100,500,3,3,0.09,9,0.491507351398468,0.505811870098114,0.9472,175258,outputs_grid/mnist_resnet_gn_pickme++_N5000_M100_K500_seed7
+mnist,depthwisecnn,pickme++,7,5000,100,500,3,3,0.13,13,1.4924484491348267,1.4818952083587646,0.6158,22634,outputs_grid/mnist_depthwisecnn_pickme++_N5000_M100_K500_seed7

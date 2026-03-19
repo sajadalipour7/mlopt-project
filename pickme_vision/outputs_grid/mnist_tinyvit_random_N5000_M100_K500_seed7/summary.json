@@ -1,0 +1,18 @@
+{
+  "dataset": "mnist",
+  "model": "tinyvit",
+  "attack_mode": "random",
+  "seed": 7,
+  "candidate_size": 5000,
+  "attack_size": 100,
+  "topk": 500,
+  "proxy_epochs": 3,
+  "victim_epochs": 3,
+  "selection_rate": 0.05,
+  "num_selected_attackers": 5,
+  "attacker_entropy_mean": 1.2589914798736572,
+  "non_attacker_entropy_mean": 1.268760323524475,
+  "victim_accuracy": 0.5594,
+  "model_params": 347722,
+  "results_dir": "outputs_grid/mnist_tinyvit_random_N5000_M100_K500_seed7"
+}

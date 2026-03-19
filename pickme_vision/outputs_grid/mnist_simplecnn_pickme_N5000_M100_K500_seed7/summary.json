@@ -1,0 +1,18 @@
+{
+  "dataset": "mnist",
+  "model": "simplecnn",
+  "attack_mode": "pickme",
+  "seed": 7,
+  "candidate_size": 5000,
+  "attack_size": 100,
+  "topk": 500,
+  "proxy_epochs": 3,
+  "victim_epochs": 3,
+  "selection_rate": 0.12,
+  "num_selected_attackers": 12,
+  "attacker_entropy_mean": 1.5773659944534302,
+  "non_attacker_entropy_mean": 1.4352493286132812,
+  "victim_accuracy": 0.8838,
+  "model_params": 35962,
+  "results_dir": "outputs_grid/mnist_simplecnn_pickme_N5000_M100_K500_seed7"
+}

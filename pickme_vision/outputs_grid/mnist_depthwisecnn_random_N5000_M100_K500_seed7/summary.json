@@ -1,0 +1,18 @@
+{
+  "dataset": "mnist",
+  "model": "depthwisecnn",
+  "attack_mode": "random",
+  "seed": 7,
+  "candidate_size": 5000,
+  "attack_size": 100,
+  "topk": 500,
+  "proxy_epochs": 3,
+  "victim_epochs": 3,
+  "selection_rate": 0.1,
+  "num_selected_attackers": 10,
+  "attacker_entropy_mean": 1.5410963296890259,
+  "non_attacker_entropy_mean": 1.540769338607788,
+  "victim_accuracy": 0.7318,
+  "model_params": 22634,
+  "results_dir": "outputs_grid/mnist_depthwisecnn_random_N5000_M100_K500_seed7"
+}
