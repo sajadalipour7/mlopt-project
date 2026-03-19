@@ -6,7 +6,6 @@ This repo implements the three attack modes from the proposal on **MNIST** and *
 - **pickme**: attacker maximizes sample entropy under a trained proxy model using PGD.
 - **pickme++**: attacker uses a lightweight differentiable bilevel approximation so the samples stay high-entropy **after** inner-loop training.
 
-The codebase is focused on **multiple lightweight models** and on being easy to hand to lab mates.
 
 ## Supported datasets
 
