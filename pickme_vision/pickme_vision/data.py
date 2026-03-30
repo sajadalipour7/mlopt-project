@@ -18,6 +18,15 @@ class PoolData:
     num_classes: int
 
 
+@dataclass(frozen=True)
+class DatasetSpec:
+    name: str
+    torchvision_name: str | None
+    num_classes: int
+    color_mode: str
+    aliases: tuple[str, ...] = ()
+
+
 class TensorPoolDataset(Dataset):
     def __init__(self, images: torch.Tensor, labels: torch.Tensor) -> None:
         assert images.size(0) == labels.size(0)
@@ -44,10 +53,67 @@ class FakeVisionDataset(Dataset):
         return self.images[index], self.labels[index]
 
 
+def _fake_loader(*, train: bool, root: str | Path) -> Dataset:
+    del root
+    return FakeVisionDataset(size=2000 if train else 500)
+
+
+DATASET_SPECS: dict[str, DatasetSpec] = {
+    "mnist": DatasetSpec(
+        name="mnist",
+        torchvision_name="MNIST",
+        num_classes=10,
+        color_mode="grayscale",
+        aliases=("minist",),
+    ),
+    "cifar10": DatasetSpec(
+        name="cifar10",
+        torchvision_name="CIFAR10",
+        num_classes=10,
+        color_mode="rgb",
+        aliases=("cifar-10",),
+    ),
+    "fashionmnist": DatasetSpec(
+        name="fashionmnist",
+        torchvision_name="FashionMNIST",
+        num_classes=10,
+        color_mode="grayscale",
+        aliases=("fashion-mnist", "fmnist"),
+    ),
+    "fake": DatasetSpec(
+        name="fake",
+        torchvision_name=None,
+        num_classes=10,
+        color_mode="rgb",
+    ),
+}
+
+DATASET_ALIASES: dict[str, str] = {
+    alias: spec.name
+    for spec in DATASET_SPECS.values()
+    for alias in (spec.name, *spec.aliases)
+}
+
+
+def supported_dataset_names() -> tuple[str, ...]:
+    return tuple(DATASET_SPECS)
+
+
+def normalize_dataset_name(name: str) -> str:
+    key = name.lower()
+    if key not in DATASET_ALIASES:
+        supported = ", ".join(sorted(DATASET_ALIASES))
+        raise ValueError(f"dataset must be one of: {supported}")
+    return DATASET_ALIASES[key]
+
+
+def dataset_spec(name: str) -> DatasetSpec:
+    return DATASET_SPECS[normalize_dataset_name(name)]
+
 
 def _pil_to_tensor(img: Image.Image, dataset_name: str) -> torch.Tensor:
-    dataset_name = dataset_name.lower()
-    if dataset_name == "mnist":
+    spec = dataset_spec(dataset_name)
+    if spec.color_mode == "grayscale":
         img = img.convert("L").resize((32, 32), Image.BILINEAR).convert("RGB")
     else:
         img = img.convert("RGB").resize((32, 32), Image.BILINEAR)
@@ -58,24 +124,20 @@ def _pil_to_tensor(img: Image.Image, dataset_name: str) -> torch.Tensor:
 
 
 def load_base_dataset(name: str, root: str | Path, train: bool = True) -> Dataset:
-    name = name.lower()
-    root = str(root)
-    if name == "fake":
-        return FakeVisionDataset(size=2000 if train else 500)
+    spec = dataset_spec(name)
+    if spec.name == "fake":
+        return _fake_loader(root=root, train=train)
 
     try:
-        from torchvision import datasets  # lazy import to avoid import-time failure in broken envs
+        from torchvision import datasets
     except Exception as e:  # pragma: no cover
         raise RuntimeError(
             "torchvision could not be imported. Please install matching torch/torchvision versions. "
             f"Original error: {e}"
         ) from e
 
-    if name == "mnist":
-        return datasets.MNIST(root=root, train=train, transform=None, download=True)
-    if name == "cifar10":
-        return datasets.CIFAR10(root=root, train=train, transform=None, download=True)
-    raise ValueError("dataset must be one of: mnist, cifar10, fake")
+    dataset_cls = getattr(datasets, spec.torchvision_name)
+    return dataset_cls(root=str(root), train=train, transform=None, download=True)
 
 
 
@@ -86,7 +148,8 @@ def materialize_candidate_pool(
     seed: int,
     train: bool = True,
 ) -> PoolData:
-    dataset = load_base_dataset(dataset_name, root=root, train=train)
+    spec = dataset_spec(dataset_name)
+    dataset = load_base_dataset(spec.name, root=root, train=train)
     total_size = len(dataset)
     if candidate_size <= 0 or candidate_size > total_size:
         candidate_size = total_size
@@ -101,7 +164,7 @@ def materialize_candidate_pool(
         if isinstance(img, torch.Tensor):
             tensor = img.float().clamp(0.0, 1.0)
         else:
-            tensor = _pil_to_tensor(img, dataset_name)
+            tensor = _pil_to_tensor(img, spec.name)
         if tensor.ndim == 2:
             tensor = tensor.unsqueeze(0).repeat(3, 1, 1)
         elif tensor.size(0) == 1:
@@ -111,7 +174,7 @@ def materialize_candidate_pool(
 
     images_tensor = torch.stack(images).float().clamp(0.0, 1.0)
     labels_tensor = torch.tensor(labels, dtype=torch.long)
-    return PoolData(images=images_tensor, labels=labels_tensor, dataset_name=dataset_name, num_classes=10)
+    return PoolData(images=images_tensor, labels=labels_tensor, dataset_name=spec.name, num_classes=spec.num_classes)
 
 
 

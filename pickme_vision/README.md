@@ -1,6 +1,6 @@
 # PickMe / PickMe++ vision codebase
 
-This repo implements the three attack modes from the proposal on **MNIST** and **CIFAR-10**:
+This repo implements the three attack modes from the proposal on **MNIST**, **CIFAR-10**, and **Fashion-MNIST**:
 
 - **random**: attacker controls a random subset of samples and does not optimize them.
 - **pickme**: attacker maximizes sample entropy under a trained proxy model using PGD.
@@ -11,7 +11,14 @@ This repo implements the three attack modes from the proposal on **MNIST** and *
 
 - `mnist`
 - `cifar10`
+- `fashionmnist`
 - `fake` (only for smoke tests / debugging)
+
+Accepted aliases:
+
+- `minist` → `mnist`
+- `cifar-10` → `cifar10`
+- `fashion-mnist`, `fmnist` → `fashionmnist`
 
 ## Supported models
 
@@ -94,7 +101,7 @@ python run_attack.py \
 
 For every run, the script does the following:
 
-1. Load a candidate pool from MNIST or CIFAR-10.
+1. Load a candidate pool from MNIST, CIFAR-10, or Fashion-MNIST.
 2. Choose an attacker-controlled subset `M` of size `attack_size`.
 3. Create poisoned attacker samples according to the chosen attack mode.
 4. Replace those samples inside the candidate pool.
@@ -204,7 +211,15 @@ python run_attack.py --dataset cifar10 --model resnet_gn    --attack-mode pickme
 python run_attack.py --dataset cifar10 --model resnet_gn    --attack-mode pickme++ --candidate-size 2000 --attack-size 50  --topk 200 --proxy-epochs 5 --epsilon 0.1 --alpha 0.005 --pickmepp-outer-steps 6 --pickmepp-inner-steps 4 --device auto
 ```
 
-### D. Model-comparison grid on MNIST
+### D. Fashion-MNIST starter runs
+
+```bash
+python run_attack.py --dataset fashionmnist --model simplecnn --attack-mode random --candidate-size 5000 --attack-size 100 --topk 500 --proxy-epochs 3 --device auto
+python run_attack.py --dataset fashionmnist --model simplecnn --attack-mode pickme --candidate-size 5000 --attack-size 100 --topk 500 --proxy-epochs 3 --epsilon 0.3 --alpha 0.01 --pgd-steps 40 --device auto
+python run_attack.py --dataset fashion-mnist --model resnet_gn --attack-mode pickme++ --candidate-size 2000 --attack-size 50 --topk 200 --proxy-epochs 3 --epsilon 0.3 --alpha 0.01 --pickmepp-outer-steps 8 --pickmepp-inner-steps 5 --device auto
+```
+
+### E. Model-comparison grid on MNIST
 
 ```bash
 python run_attack.py --dataset mnist --model simplecnn     --attack-mode pickme --candidate-size 5000 --attack-size 100 --topk 500 --proxy-epochs 3 --device auto
@@ -241,7 +256,7 @@ outputs/results_summary.csv
 
 ### Dataset / model
 
-- `--dataset` : `mnist`, `cifar10`, `fake`
+- `--dataset` : `mnist`, `cifar10`, `fashionmnist`, `fake`
 - `--model`   : `simplecnn`, `resnet_gn`, `depthwisecnn`, `tinyvit`
 
 ### Pool setup
@@ -346,4 +361,3 @@ What it does not do yet:
 - full-epoch bilevel retraining through the entire dataset,
 - large-scale hyperparameter tuning,
 - backdoor trigger constraints.
-

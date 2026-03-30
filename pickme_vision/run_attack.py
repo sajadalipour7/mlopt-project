@@ -5,12 +5,19 @@ import argparse
 import csv
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Optional
 
 import torch
 
 from pickme_vision.attacks import PGDConfig, PickMePPConfig, pickme_attack, pickmepp_attack, random_attack
-from pickme_vision.data import PoolData, TensorPoolDataset, apply_poison, choose_attacker_indices, materialize_candidate_pool
+from pickme_vision.data import (
+    PoolData,
+    TensorPoolDataset,
+    apply_poison,
+    choose_attacker_indices,
+    materialize_candidate_pool,
+    normalize_dataset_name,
+    supported_dataset_names,
+)
 from pickme_vision.engine import TrainConfig, compute_entropies, evaluate_accuracy, select_topk, selection_rate, train_model
 from pickme_vision.models import build_model
 from pickme_vision.utils import count_parameters, ensure_dir, save_json, set_seed, resolve_device
@@ -38,8 +45,11 @@ class RunSummary:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="MNIST/CIFAR-10 uncertainty-selection attacks: random, pickme, pickme++")
-    parser.add_argument("--dataset", type=str, default="mnist", choices=["mnist", "cifar10", "fake"])
+    dataset_help = ", ".join(supported_dataset_names())
+    parser = argparse.ArgumentParser(
+        description="Vision uncertainty-selection attacks on MNIST, CIFAR-10, Fashion-MNIST, and fake data."
+    )
+    parser.add_argument("--dataset", type=str, default="mnist", help=f"Dataset name or alias. Supported: {dataset_help}")
     parser.add_argument("--data-root", type=str, default="./data")
     parser.add_argument("--model", type=str, default="simplecnn", choices=["simplecnn", "resnet_gn", "depthwisecnn", "tinyvit"])
     parser.add_argument("--attack-mode", type=str, default="random", choices=["random", "pickme", "pickme++"])
@@ -63,7 +73,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", type=str, default="auto")
     parser.add_argument("--output-dir", type=str, default="./outputs")
     parser.add_argument("--save-poisoned-pool", action="store_true")
-    return parser.parse_args()
+    args = parser.parse_args()
+    args.dataset = normalize_dataset_name(args.dataset)
+    return args
 
 
 
