@@ -1,2 +1,0 @@
-dataset,model,attack_mode,seed,candidate_size,attack_size,topk,proxy_epochs,victim_epochs,selection_rate,num_selected_attackers,attacker_entropy_mean,non_attacker_entropy_mean,victim_accuracy,model_params,results_dir
-fashionmnist,simplecnn,random,7,256,16,32,1,1,0.1875,3,2.2514257431030273,2.2529470920562744,0.27734375,35962,outputs_fashionmnist_test/fashionmnist_simplecnn_random_N256_M16_K32_seed7
