@@ -1,6 +1,6 @@
 # mlopt-project
 
-## Pick Me: Fooling Uncertainty-Based Data Selection
+## Pick Me: Fooling Uncertainty-Based Data Selection In Favor of Your Data
 
 This repository contains the implementation for a project studying adversarial attacks on uncertainty-based data selection (coreset selection) pipelines.
 
